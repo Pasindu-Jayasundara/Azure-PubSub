@@ -1,0 +1,30 @@
+{
+  "name": "azure-pubsub",
+  "version": "1.0.0",
+  "description": "Azure Web PubSub chat backend",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "dev": "node --watch index.js",
+    "start": "nodemon index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "@azure/web-pubsub": "^1.2.0",
+    "@azure/web-pubsub-client": "^1.1.0",
+    "cors": "^2.8.6",
+    "dotenv": "^18.0.7",
+    "express": "^4.21.2"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Pasindu-Jayasundara/Azure-PubSub.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Pasindu-Jayasundara/Azure-PubSub/issues"
+  },
+  "homepage": "https://github.com/Pasindu-Jayasundara/Azure-PubSub#readme"
+}
