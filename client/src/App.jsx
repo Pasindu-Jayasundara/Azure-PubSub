@@ -4,9 +4,7 @@ import { WebPubSubClient } from '@azure/web-pubsub-client';
 const GROUP_NAME = 'sample_chat';
 
 function App() {
-
   const [nickname, setNickname] = useState('Guest');
-  const nicknameRef = useRef('Guest');
   const [draft, setDraft] = useState('');
   const [messages, setMessages] = useState([
     { id: 'welcome', user: 'System', text: 'Chat connected. Say hello!', mine: false },
@@ -15,14 +13,10 @@ function App() {
   const clientRef = useRef(null);
 
   useEffect(() => {
-    nicknameRef.current = nickname;
-  }, [nickname]);
-
-  useEffect(() => {
-
+    
     const client = new WebPubSubClient({
       getClientAccessUrl: async () => {
-        const response = await fetch(`${import.meta.env.VITE_SERVER_URL}/negotiate?user=${encodeURIComponent(nicknameRef.current || 'Guest')}`);
+        const response = await fetch(`${import.meta.env.VITE_SERVER_URL}/negotiate?user=${encodeURIComponent(nickname || 'Guest')}`);
         const { url } = await response.json();
         return url;
       },
@@ -31,25 +25,22 @@ function App() {
 
     clientRef.current = client;
 
-    const handleConnected = () => {
-      setConnectionStatus('Connected');
-    };
-
-    const handleDisconnected = (event) => {
-      setConnectionStatus(event?.message?.message || 'Disconnected');
-    };
+    const handleConnected = () => setConnectionStatus('Connected');
+    const handleDisconnected = (event) => setConnectionStatus(event?.message?.message || 'Disconnected');
 
     const handleGroupMessage = (event) => {
       const payload = event.message?.data;
       const data = typeof payload === 'string' ? JSON.parse(payload) : payload;
-      const message = {
-        id: `${event.message?.group}-${Date.now()}-${Math.random()}`,
-        user: data?.user || 'Unknown',
-        text: data?.text || '',
-        mine: data?.user === (nickname || 'Guest'),
-      };
 
-      setMessages((currentMessages) => [...currentMessages, message]);
+      setMessages((currentMessages) => [
+        ...currentMessages,
+        {
+          id: `${event.message?.group}-${Date.now()}-${Math.random()}`,
+          user: data?.user || 'Unknown',
+          text: data?.text || '',
+          mine: data?.user === (nickname || 'Guest'),
+        },
+      ]);
     };
 
     client.on('connected', handleConnected);
