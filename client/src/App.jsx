@@ -15,7 +15,15 @@ function App() {
   useEffect(() => {
     
     // get the client access token from the server and create a new WebPubSubClient instance
-
+    const client = new WebPubSubClient({
+      getClientAccessUrl: async () => {
+        const response = await 
+        fetch(`${import.meta.env.VITE_SERVER_URL}/negotiate?user=${encodeURIComponent(nickname || 'Guest')}`);
+        const { url } = await response.json();
+        return url;
+      },
+      autoReconnect: true,
+    });
 
     clientRef.current = client;
 
@@ -38,7 +46,21 @@ function App() {
     };
 
     // add listerners and start the client
-    
+    client.on('connected', handleConnected);
+    client.on('disconnected', handleDisconnected);
+    client.on('group-message', handleGroupMessage);
+
+    client
+      .start()
+      .then(async () => {
+        await client.joinGroup(GROUP_NAME);
+        setConnectionStatus('Connected');
+      })
+      .catch((error) => {
+        console.error('Unable to start WebPubSub client', error);
+        setConnectionStatus('Connection failed');
+      });
+
 
     return () => {
       client.off('connected', handleConnected);
@@ -62,7 +84,8 @@ function App() {
     };
 
     // send the message to the group using the WebPubSubClient instance
-    
+await clientRef.current.sendToGroup(GROUP_NAME, payload, 'json');
+
     setDraft('');
   };
 
