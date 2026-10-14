@@ -20,11 +20,8 @@ app.get('/health', (_req, res) => {
 app.get('/negotiate', async (req, res) => {
   const userId = req.query.user ? String(req.query.user) : undefined;
 
-  const token = await serviceClient.getClientAccessToken({
-    userId,
-    roles: ['webpubsub.joinLeaveGroup', 'webpubsub.sendToGroup'],
-  });
-
+  // get access token for the client to connect to the Web PubSub service
+  
   res.json({ url: token.url });
 });
 
